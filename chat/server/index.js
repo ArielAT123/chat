@@ -12,7 +12,7 @@ const httpServer = createServer(app);
 app.use(cors());
 
 // Servir archivos estáticos del frontend (compilado)
-app.use(express.static(path.join(__dirname, '../chat/dist')));
+app.use(express.static(path.join(__dirname, '../cliente/dist')));
 
 // Configurar Socket.io con CORS
 const io = new Server(httpServer, {
@@ -120,8 +120,9 @@ io.on('connection', (socket) => {
 });
 
 // Cualquier otra ruta envía al index.html (para SPA)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../chat/dist/index.html'));
+// Cualquier otra ruta envía al index.html (para SPA)
+app.get(/(.*)/, (req, res) => {
+  res.sendFile(path.join(__dirname, '../cliente/dist/index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
