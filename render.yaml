@@ -1,0 +1,25 @@
+services:
+  # Backend Service
+  - type: web
+    name: chat-backend
+    env: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && node index.js
+    envVars:
+      - key: PORT
+        value: 10000
+    autoDeploy: false
+
+  # Frontend Service
+  - type: static
+    name: chat-frontend
+    env: static
+    buildCommand: cd chat && npm install && npm run build
+    staticPublishPath: chat/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: chat-backend
+          property: host

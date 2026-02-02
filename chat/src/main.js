@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 
 // Conectar al servidor
-const socket = io('http://localhost:3000');
+const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000');
 
 // Estado de la aplicación
 const state = {
@@ -53,9 +53,11 @@ socket.on('disconnect', () => {
 // Cuando un nuevo usuario se une
 socket.on('user-joined', async ({ userId, username }) => {
   console.log('👤 Nuevo usuario:', username, userId);
+  console.log('👤 Nuevo usuario:', username, userId);
   addMessage(`${username} se unió a la sala`, 'system');
+  showToast(`${username} se unió a la sala`, 'success');
   addParticipant(username, false, userId);
-  
+
   // Crear oferta para el nuevo usuario
   await createPeerConnection(userId, true);
 });
@@ -70,11 +72,11 @@ socket.on('existing-users', async (userIds) => {
 socket.on('offer', async ({ offer, from, username }) => {
   console.log('📥 Oferta recibida de:', from);
   const pc = await createPeerConnection(from, false);
-  
+
   await pc.setRemoteDescription(new RTCSessionDescription(offer));
   const answer = await pc.createAnswer();
   await pc.setLocalDescription(answer);
-  
+
   socket.emit('answer', {
     answer: answer,
     to: from
@@ -102,18 +104,19 @@ socket.on('ice-candidate', async ({ candidate, from }) => {
 socket.on('user-left', ({ userId, username }) => {
   console.log('👋 Usuario salió:', username);
   addMessage(`${username} salió de la sala`, 'system');
-  
+  showToast(`${username} salió de la sala`, 'info');
+
   // Cerrar conexión peer
   const pc = state.peerConnections.get(userId);
   if (pc) {
     pc.close();
     state.peerConnections.delete(userId);
   }
-  
+
   // Remover audio remoto
   const audio = document.getElementById(`audio-${userId}`);
   if (audio) audio.remove();
-  
+
   // Remover de la lista de participantes
   const participant = document.getElementById(`participant-${userId}`);
   if (participant) participant.remove();
@@ -132,7 +135,7 @@ function init() {
   elements.joinBtn.addEventListener('click', handleJoinRoom);
   elements.muteBtn.addEventListener('click', toggleMute);
   elements.leaveBtn.addEventListener('click', leaveRoom);
-  
+
   elements.roomId.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') handleJoinRoom();
   });
@@ -141,7 +144,7 @@ function init() {
   });
 
   window.addEventListener('beforeunload', leaveRoom);
-  
+
   addMessage('Sistema listo. Ingresa tus datos para comenzar.', 'system');
 }
 
@@ -181,7 +184,7 @@ async function handleJoinRoom() {
 
     elements.controls.classList.remove('hidden');
     elements.participants.classList.remove('hidden');
-    
+
     elements.roomId.disabled = true;
     elements.username.disabled = true;
 
@@ -195,7 +198,7 @@ async function handleJoinRoom() {
     console.error('Error al acceder al micrófono:', error);
     updateStatus('❌ Error: No se pudo acceder al micrófono', 'error');
     elements.joinBtn.disabled = false;
-    
+
     if (error.name === 'NotAllowedError') {
       addMessage('Permiso de micrófono denegado. Por favor, permite el acceso.', 'system');
     }
@@ -215,7 +218,7 @@ async function createPeerConnection(userId, createOffer) {
   // Recibir tracks remotos
   pc.ontrack = (event) => {
     console.log('🎵 Track remoto recibido de:', userId);
-    
+
     let audio = document.getElementById(`audio-${userId}`);
     if (!audio) {
       audio = new Audio();
@@ -223,7 +226,7 @@ async function createPeerConnection(userId, createOffer) {
       audio.autoplay = true;
       document.body.appendChild(audio);
     }
-    
+
     if (!audio.srcObject) {
       audio.srcObject = event.streams[0];
     }
@@ -243,7 +246,7 @@ async function createPeerConnection(userId, createOffer) {
   if (createOffer) {
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
-    
+
     socket.emit('offer', {
       offer: offer,
       to: userId
@@ -258,7 +261,7 @@ function toggleMute() {
   if (!state.localStream) return;
 
   state.isMuted = !state.isMuted;
-  
+
   state.localStream.getAudioTracks().forEach(track => {
     track.enabled = !state.isMuted;
   });
@@ -293,7 +296,7 @@ function leaveRoom() {
 
   updateStatus('Desconectado de la sala', 'normal');
   addMessage('Saliste de la sala', 'system');
-  
+
   elements.controls.classList.add('hidden');
   elements.participants.classList.add('hidden');
   elements.roomId.disabled = false;
@@ -301,13 +304,13 @@ function leaveRoom() {
   elements.joinBtn.disabled = false;
   elements.roomId.value = '';
   elements.username.value = '';
-  
+
   elements.participantsList.innerHTML = '';
 
   state.currentRoom = null;
   state.username = null;
   state.isMuted = false;
-  
+
   elements.muteIcon.textContent = '🎤';
   elements.muteText.textContent = 'Silenciar';
   elements.muteBtn.style.background = '#ff9800';
@@ -317,7 +320,7 @@ function leaveRoom() {
 function updateStatus(message, type = 'normal') {
   elements.status.textContent = message;
   elements.status.className = 'status';
-  
+
   if (type === 'connected') {
     elements.status.classList.add('connected');
   } else if (type === 'error') {
@@ -330,7 +333,7 @@ function addMessage(text, type = 'normal') {
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${type}`;
   messageDiv.textContent = `${new Date().toLocaleTimeString()}: ${text}`;
-  
+
   elements.messages.appendChild(messageDiv);
   elements.messages.scrollTop = elements.messages.scrollHeight;
 }
@@ -345,7 +348,7 @@ function addParticipant(name, isLocal = false, userId = null) {
     <strong>${name}</strong>
     ${isLocal ? '(Tú)' : ''}
   `;
-  
+
   elements.participantsList.appendChild(participantDiv);
 }
 

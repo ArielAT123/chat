@@ -1,28 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat de Audio</title>
   <link rel="stylesheet" href="./src/style.css">
+  <link rel="stylesheet" href="./src/toast.css">
 </head>
+
 <body>
   <div class="container">
     <h1>🎙️ Chat de Audio en Vivo</h1>
-    
+
     <div class="room-section">
-      <input 
-        type="text" 
-        id="roomId" 
-        placeholder="ID de la sala (ej: sala123)"
-        autocomplete="off"
-      >
-      <input 
-        type="text" 
-        id="username" 
-        placeholder="Tu nombre"
-        autocomplete="off"
-      >
+      <input type="text" id="roomId" placeholder="ID de la sala (ej: sala123)" autocomplete="off">
+      <input type="text" id="username" placeholder="Tu nombre" autocomplete="off">
       <button id="joinBtn" class="btn-primary">Unirse a la sala</button>
     </div>
 
@@ -56,8 +49,10 @@
     </div>
 
     <div id="messages" class="messages"></div>
+    <div id="toast-container" class="toast-container"></div>
   </div>
 
   <script type="module" src="./src/main.js"></script>
 </body>
+
 </html>

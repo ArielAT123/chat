@@ -12,7 +12,7 @@ app.use(cors());
 // Configurar Socket.io con CORS
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173", // URL de Vite
+    origin: process.env.CLIENT_URL || "http://localhost:5173", // URL de Vite o variable de entorno
     methods: ["GET", "POST"]
   }
 });
@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
     // Enviar lista de usuarios existentes al nuevo usuario
     const usersInRoom = Array.from(rooms.get(roomId))
       .filter(id => id !== socket.id);
-    
+
     socket.emit('existing-users', usersInRoom);
 
     // Broadcast a la sala cuántos usuarios hay
