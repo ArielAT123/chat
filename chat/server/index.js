@@ -50,7 +50,14 @@ io.on('connection', (socket) => {
 
     // Enviar lista de usuarios existentes al nuevo usuario
     const usersInRoom = Array.from(rooms.get(roomId))
-      .filter(id => id !== socket.id);
+      .filter(id => id !== socket.id)
+      .map(id => {
+        const userSocket = io.sockets.sockets.get(id);
+        return {
+          id,
+          username: userSocket ? userSocket.username : 'Unknown'
+        };
+      });
 
     socket.emit('existing-users', usersInRoom);
 
