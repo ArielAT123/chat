@@ -1,7 +1,9 @@
 import { io } from 'socket.io-client';
 
 // Conectar al servidor
-const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000');
+// En producción (mismo dominio) usa undefined/null para autodetectar
+// En desarrollo (puertos distintos) usa la URL del servidor
+const socket = io(import.meta.env.PROD ? undefined : 'http://localhost:3000');
 
 // Estado de la aplicación
 const state = {

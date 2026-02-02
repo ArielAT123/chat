@@ -6,7 +6,9 @@
     "install-all": "npm install && cd server && npm install && cd ../chat && npm install",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "cd server && npm run dev",
-    "dev:client": "cd chat && npm run dev"
+    "dev:client": "cd chat && npm run dev",
+    "build": "cd chat && npm install && npm run build && cd ../server && npm install",
+    "start": "cd server && node index.js"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

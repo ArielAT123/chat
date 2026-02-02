@@ -1,25 +1,13 @@
 services:
-  # Backend Service
+  # Single Service (Backend + Frontend served statically)
   - type: web
-    name: chat-backend
+    name: chat-app
     env: node
     plan: free
-    buildCommand: cd server && npm install
-    startCommand: cd server && node index.js
+    # Build: Install dependencies for both, build frontend
+    buildCommand: npm install && npm run build
+    # Start: Run the server (which serves the frontend)
+    startCommand: npm start
     envVars:
       - key: PORT
         value: 10000
-    autoDeploy: false
-
-  # Frontend Service
-  - type: static
-    name: chat-frontend
-    env: static
-    buildCommand: cd chat && npm install && npm run build
-    staticPublishPath: chat/dist
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: chat-backend
-          property: host

@@ -3,11 +3,16 @@ const { createServer } = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 
+const path = require('path');
+
 const app = express();
 const httpServer = createServer(app);
 
 // Configurar CORS
 app.use(cors());
+
+// Servir archivos estáticos del frontend (compilado)
+app.use(express.static(path.join(__dirname, '../chat/dist')));
 
 // Configurar Socket.io con CORS
 const io = new Server(httpServer, {
@@ -112,6 +117,11 @@ io.on('connection', (socket) => {
       }
     }
   });
+});
+
+// Cualquier otra ruta envía al index.html (para SPA)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../chat/dist/index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
