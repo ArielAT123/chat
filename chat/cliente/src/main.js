@@ -108,6 +108,8 @@ function init() {
   elements.muteBtn.addEventListener('click', toggleMute);
   elements.leaveBtn.addEventListener('click', leaveRoom);
 
+  elements.speakerBtn.addEventListener('click', toggleSpeaker);
+
   // Enter keys
   elements.roomId.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') handleJoinRoom();
@@ -115,6 +117,43 @@ function init() {
   elements.username.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') handleJoinRoom();
   });
+}
+
+function toggleSpeaker() {
+  const btn = elements.speakerBtn;
+  const isActive = btn.classList.toggle('active');
+
+  // Opción 1: Mute/Unmute audio entrante (Deafen)
+  // Iterar sobre todos los elementos de audio y mutearlos
+  document.querySelectorAll('audio').forEach(audio => {
+    // Si está activo (Speaker on), volumen 1. Si no, volumen 0 (o silenciado)
+    // Pero "Speaker" suele significar "Altavoz" vs "Auricular".
+    // En navegadores web, no siempre se puede controlar esto (setSinkId es experimental).
+    // Implementaremos "Deafen" (Silenciar a todos) como fallback común o comportamiento esperado si no podemos cambiar salidas.
+
+    // Comportamiento: Speaker ON = Escucho todo (Muted = false). Speaker OFF = No escucho nada (Muted = true)?
+    // O Speaker ON = Volumen Alto. 
+
+    // Vamos a asumir que el usuario quiere poder silenciar lo que escucha (Deafen).
+    // Si el botón está "active" (color/resaltado), escuchamos. Si no, silencio.
+    // Ajustemos la lógica visual: Por defecto está en "Speaker" (escuchando).
+
+    // Si queremos cambiar dispositivo de salida (Chrome only):
+    if (typeof audio.setSinkId === 'function') {
+      // Esto requeriría listar dispositivos y seleccionar el de tipo 'speaker'. 
+      // Por simplicidad y compatibilidad, haremos Mute de salida (Deafen)
+    }
+
+    audio.muted = !isActive;
+  });
+
+  if (isActive) {
+    btn.querySelector('.btn-label').textContent = 'Speaker On';
+    btn.style.opacity = '1';
+  } else {
+    btn.querySelector('.btn-label').textContent = 'Speaker Off';
+    btn.style.opacity = '0.5';
+  }
 }
 
 function switchScreen(screenName) {
@@ -224,14 +263,18 @@ function toggleMute() {
   if (state.isMuted) {
     micBtn.classList.add('muted');
     elements.muteText.textContent = 'Muted';
-    if (elements.micIconMain) elements.micIconMain.textContent = '🔇';
 
+    if (elements.micIconMain) elements.micIconMain.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+<path d="M15 9.4V5C15 3.34315 13.6569 2 12 2C10.8224 2 9.80325 2.67852 9.3122 3.66593M12 19V22M8 22H16M3 3L21 21M5.00043 10C5.00043 10 3.50062 19 12.0401 19C14.51 19 16.1333 18.2471 17.1933 17.1768M19.0317 13C19.2365 11.3477 19 10 19 10M15 6H13M12 15C10.3431 15 9 13.6569 9 12V9L14.1226 14.12C13.5796 14.6637 12.8291 15 12 15Z" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
     // Update local visual status
     updateParticipantStatus(socket.id, 'muted');
   } else {
     micBtn.classList.remove('muted');
     elements.muteText.textContent = 'Tap to Mute';
-    if (elements.micIconMain) elements.micIconMain.textContent = '🎤';
+    if (elements.micIconMain) elements.micIconMain.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+<path d="M19 10V12C19 15.866 15.866 19 12 19M5 10V12C5 15.866 8.13401 19 12 19M12 19V22M8 22H16M15 6H13M15 10H13M12 15C10.3431 15 9 13.6569 9 12V5C9 3.34315 10.3431 2 12 2C13.6569 2 15 3.34315 15 5V12C15 13.6569 13.6569 15 12 15Z" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
 
     updateParticipantStatus(socket.id, 'talking');
   }
@@ -261,7 +304,9 @@ function leaveRoom() {
   // Reset mute UI
   elements.muteBtn.classList.remove('muted');
   elements.muteText.textContent = 'Tap to Mute';
-  if (elements.micIconMain) elements.micIconMain.textContent = '🎤';
+  if (elements.micIconMain) elements.micIconMain.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+<path d="M19 10V12C19 15.866 15.866 19 12 19M5 10V12C5 15.866 8.13401 19 12 19M12 19V22M8 22H16M15 6H13M15 10H13M12 15C10.3431 15 9 13.6569 9 12V5C9 3.34315 10.3431 2 12 2C13.6569 2 15 3.34315 15 5V12C15 13.6569 13.6569 15 12 15Z" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
 }
 
 // UI Helpers
