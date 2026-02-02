@@ -1,17 +1,16 @@
 {
-  "name": "chat",
+  "name": "chat-app-root",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "install-all": "npm install && cd server && npm install && cd ../chat && npm install",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd chat && npm run dev",
+    "build": "cd chat && npm install && npm run build && cd ../server && npm install",
+    "start": "cd server && node index.js"
   },
   "devDependencies": {
-    "vite": "^7.2.4"
-  },
-  "dependencies": {
-    "socket.io-client": "^4.8.3"
+    "concurrently": "^8.2.2"
   }
 }
