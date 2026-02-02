@@ -119,6 +119,31 @@ io.on('connection', (socket) => {
   });
 });
 
+// Endpoint para obtener usuarios de una sala
+app.get('/api/rooms/:roomId/users', (req, res) => {
+  const { roomId } = req.params;
+  const roomUsers = rooms.get(roomId);
+
+  if (!roomUsers) {
+    return res.json([]);
+  }
+
+  const usersList = [];
+  const sockets = io.sockets.sockets;
+
+  for (const socketId of roomUsers) {
+    const socket = sockets.get(socketId);
+    if (socket) {
+      usersList.push({
+        id: socketId,
+        username: socket.username || 'Anónimo'
+      });
+    }
+  }
+
+  res.json(usersList);
+});
+
 // Cualquier otra ruta envía al index.html (para SPA)
 // Cualquier otra ruta envía al index.html (para SPA)
 app.get(/(.*)/, (req, res) => {

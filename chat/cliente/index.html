@@ -4,52 +4,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat de Audio</title>
+  <title>Voice Chat</title>
   <link rel="stylesheet" href="./src/style.css">
   <link rel="stylesheet" href="./src/toast.css">
 </head>
 
 <body>
-  <div class="container">
-    <h1>🎙️ Chat de Audio en Vivo</h1>
+  <div class="app-container">
+    <header class="app-header">
+      <h2>Voice Chat</h2>
+      <div class="header-actions">
+        <!-- Placeholder for menu icon -->
+        <span class="icon-menu">⋮</span>
+      </div>
+    </header>
 
-    <div class="room-section">
-      <input type="text" id="roomId" placeholder="ID de la sala (ej: sala123)" autocomplete="off">
-      <input type="text" id="username" placeholder="Tu nombre" autocomplete="off">
-      <button id="joinBtn" class="btn-primary">Unirse a la sala</button>
+    <!-- Join Screen -->
+    <div id="join-screen" class="screen active">
+      <div class="join-content">
+        <h1>Bienvenido</h1>
+        <p>Ingresa para comenzar a hablar</p>
+
+        <div class="input-group">
+          <input type="text" id="roomId" placeholder="ID de la Sala" autocomplete="off">
+        </div>
+
+        <div class="input-group">
+          <input type="text" id="username" placeholder="Tu Nombre" autocomplete="off">
+        </div>
+
+        <button id="joinBtn" class="btn-primary">
+          Unirse
+        </button>
+      </div>
     </div>
 
-    <div id="status" class="status">
-      Ingresa un ID de sala y tu nombre para comenzar
-    </div>
+    <!-- Calls Screen -->
+    <div id="call-screen" class="screen hidden">
+      <div class="participants-list" id="participantsList">
+        <!-- Participants will be injected here -->
+      </div>
 
-    <div id="controls" class="controls hidden">
-      <button id="muteBtn" class="btn-warning">
-        <span id="muteIcon">🎤</span>
-        <span id="muteText">Silenciar</span>
-      </button>
-      <button id="leaveBtn" class="btn-danger">
-        🚪 Salir de la sala
-      </button>
-    </div>
+      <div class="call-controls">
+        <button id="speakerBtn" class="control-btn secondary">
+          🔊
+          <span class="btn-label">Speaker</span>
+        </button>
 
-    <div id="participants" class="participants hidden">
-      <h3>👥 Participantes</h3>
-      <div id="participantsList"></div>
-    </div>
+        <button id="muteBtn" class="control-btn primary">
+          <div class="mic-container">
+            <div class="mic-icon" id="micIconMain">🎤</div>
+          </div>
+          <span class="btn-label" id="muteText">Tap to Mute</span>
+        </button>
 
-    <div class="info">
-      <h3>📋 Instrucciones</h3>
-      <ul>
-        <li>Comparte el mismo ID de sala con tus amigos</li>
-        <li>Todos deben usar el mismo ID para conectarse</li>
-        <li>Permite el acceso al micrófono cuando el navegador lo solicite</li>
-        <li>El audio se transmite en tiempo real</li>
-      </ul>
-    </div>
+        <button id="leaveBtn" class="control-btn danger">
+          📞
+          <span class="btn-label">Leave</span>
+        </button>
+      </div>
 
-    <div id="messages" class="messages"></div>
-    <div id="toast-container" class="toast-container"></div>
+      <div id="status" class="status-toast hidden"></div>
+      <div id="toast-container" class="toast-container"></div>
+    </div>
   </div>
 
   <script type="module" src="./src/main.js"></script>
