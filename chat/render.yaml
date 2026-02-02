@@ -2,6 +2,7 @@ services:
   # Single Service (Backend + Frontend served statically)
   - type: web
     name: chat-app
+    rootDir: chat
     env: node
     plan: free
     # Build: Install dependencies for both, build frontend
